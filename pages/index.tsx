@@ -5,6 +5,7 @@ import Uploader from '../components/upload/uploader'
 import styles from '../styles/Home.module.css'
 
 const Home: NextPage = () => {
+  var hello = 'Hello world'
   return (
     <div className={styles.container}>
       <Head>
@@ -14,13 +15,10 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          F.B.Convert
-        </h1>
+        <h1 className={styles.title}>F.B.Convert</h1>
 
         <p className={styles.description}>
-          Get started to upload{' '}
-          <code className={styles.code}>your file</code>
+          Get started to upload <code className={styles.code}>your file</code>
         </p>
 
         <div className={styles.grid}>
