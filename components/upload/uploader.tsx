@@ -1,54 +1,30 @@
-import { useState, ChangeEvent, FormEvent } from "react";
-import axios from "axios";
-import {
-  Stack,
-  Input,
-  Button,
-  FormControl,
-  InputGroup,
-} from "@chakra-ui/react";
+import axios from 'axios'
+import { UiFileInputButton } from '../form/form'
 
-const Uploader = () => {
-  const [file, setFile] = useState("");
-  const [fileConvert, setFileConvert] = useState();
+const Uploader = (): JSX.Element => {
+  const onChange = async (formData: FormData): Promise<void> => {
+    const config = {
+      headers: { 'content-type': 'multipart/form-data' },
+      onUploadProgress: (event: ProgressEvent): void => {
+        console.log(
+          `Current progress:`,
+          Math.round((event.loaded * 100) / event.total)
+        )
+      }
+    }
 
-  const onSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    const payload = { file };
-    const response = await axios.post("/api/convert", payload);
-    const data = await response.data;
+    const response = await axios.post('/api/convert', formData, config)
 
-    console.log("Client: ", data);
-    setFileConvert(data);
-  };
-
-  const onChange = async (e: ChangeEvent<HTMLInputElement>) =>
-    setFile(e.target.value);
+    console.log('response', response.data)
+  }
 
   return (
-    <form onSubmit={onSubmit} method="post">
-      <FormControl>
-        <Stack spacing="30px">
-          <InputGroup>
-            <Input
-              type="file"
-              name="file"
-              onChange={onChange}
-              placeholder="large size"
-              size="lg"
-              variant="outline"
-            />
-          </InputGroup>
-          <Button type="submit" colorScheme="teal" variant="outline">
-            {fileConvert ? "Download" : "Convert"}
-          </Button>
-          <a href={fileConvert} download>
-            Download
-          </a>
-        </Stack>
-      </FormControl>
-    </form>
-  );
-};
+    <UiFileInputButton
+      label="Upload Single File"
+      uploadFileName="theFiles"
+      onChange={onChange}
+    />
+  )
+}
 
-export default Uploader;
+export default Uploader

@@ -5,7 +5,6 @@ import Uploader from '../components/upload/uploader'
 import styles from '../styles/Home.module.css'
 
 const Home: NextPage = () => {
-  var hello = 'Hello world'
   return (
     <div className={styles.container}>
       <Head>

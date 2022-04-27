@@ -1,26 +1,38 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import AdmZip from 'adm-zip'
-import path from 'path'
+import nextConnect from 'next-connect'
+import multer from 'multer'
 
-export default (req: NextApiRequest, res: NextApiResponse) => {
-  const { file } = req.body
-  console.log('./' + file.split('\\')[2]);
+// Returns a Multer instance that provides several methods for generating
+// middleware that process files uploaded in multipart/form-data format.
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: './public/uploads',
+    filename: (req, file, cb) => cb(null, file.originalname)
+  })
+})
 
-  
-  extractArchive('./jm.zip');
-  res.status(200).send({ name: file })
-}
+const apiRoute = nextConnect({
+  // Handle any other HTTP method
+  onNoMatch(req: NextApiRequest, res: NextApiResponse) {
+    res.status(405).json({ error: `Method '${req.method}' Not Allowed` })
+  }
+})
 
-async function extractArchive(file: any) {
-  try {
-    const zip = new AdmZip(file);
-    console.log('Zip ' + zip);
-    const outputDir = `${path.parse(file).name}_extracted`;
-    console.log('Output dir ' + outputDir);
-    
-    zip.extractAllTo('./jm.zip', true);
-    console.log(`Extracted to "${outputDir}" successfully`);
-  } catch (e) {
-    console.error(`Something went wrong. ${e}`);
+// Returns middleware that processes multiple files sharing the same field name.
+const uploadMiddleware = upload.array('theFiles')
+
+// Adds the middleware to Next-Connect
+apiRoute.use(uploadMiddleware)
+
+// Process a POST request
+apiRoute.post((req: NextApiRequest, res: NextApiResponse) => {
+  res.status(200).json({ data: 'success' })
+})
+
+export default apiRoute
+
+export const config = {
+  api: {
+    bodyParser: false // Disallow body parsing, consume as stream
   }
 }
